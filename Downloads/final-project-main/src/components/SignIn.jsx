@@ -8,12 +8,35 @@ const SignIn = () => {
     password: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign in logic here
-    console.log('Sign in:', formData);
-    navigate('/');
+  
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('Sign in successful:', data);
+        // Store token in localStorage (if JWT-based authentication)
+        localStorage.setItem('token', data.token);
+        navigate('/');
+      } else {
+        console.error('Sign in failed:', data.message);
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Something went wrong. Please try again.');
+    }
   };
+  
 
   const handleChange = (e) => {
     setFormData({
